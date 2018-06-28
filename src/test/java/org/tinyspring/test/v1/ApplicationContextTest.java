@@ -22,7 +22,7 @@ public class ApplicationContextTest {
 
     @Test
     public void testGetBeanFromFileSystemContext(){
-        ApplicationContext ctx = new FileSystemXmlApplicationContext("/Users/tyq/IdeaProjects/tinySpring/src/test/resources/petstore-v1.xml");
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("src/test/resources/petstore-v1.xml");
         PetStoreService service = (PetStoreService)ctx.getBean("petStore");
         Assert.assertNotNull(service);
     }
