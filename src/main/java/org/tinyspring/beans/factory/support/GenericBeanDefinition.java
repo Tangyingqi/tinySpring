@@ -1,6 +1,10 @@
 package org.tinyspring.beans.factory.support;
 
 import org.tinyspring.beans.BeanDefinition;
+import org.tinyspring.beans.PropertyValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tangyingqi on 2018/6/26.
@@ -12,6 +16,8 @@ public class GenericBeanDefinition implements BeanDefinition {
     private boolean singleton = true;
     private boolean prototype = false;
     private String scope = SCOPE_DEFAULT;
+
+    List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 
     public GenericBeanDefinition(String id, String beanClassName) {
         this.id = id;
@@ -38,5 +44,9 @@ public class GenericBeanDefinition implements BeanDefinition {
 
     public String getScope() {
         return scope;
+    }
+
+    public List<PropertyValue> getPropertyValues() {
+        return this.propertyValues;
     }
 }

@@ -1,5 +1,7 @@
 package org.tinyspring.beans;
 
+import java.util.List;
+
 /**
  * Created by tangyingqi on 2018/6/26.
  */
@@ -18,4 +20,6 @@ public interface BeanDefinition {
     void setScope(String scope);
 
     String getScope();
+
+    List<PropertyValue> getPropertyValues();
 }
