@@ -8,6 +8,8 @@
           class="org.tinyspring.service.v2.PetStoreService" >
         <property name="accountDao" ref="accountDao"/>
         <property name="itemDao" ref="itemDao"/>
+        <property name="owner" value="tangyingqi"/>
+        <property name="version" value="1"/>
     </bean>
 
     <bean id="accountDao" class="org.tinyspring.dao.AccountDao"/>
