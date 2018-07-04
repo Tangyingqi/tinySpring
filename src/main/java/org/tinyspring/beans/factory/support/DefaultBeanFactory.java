@@ -2,6 +2,7 @@ package org.tinyspring.beans.factory.support;
 
 import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.PropertyValue;
+import org.tinyspring.beans.SimpleTypeConverter;
 import org.tinyspring.beans.factory.BeanCreationException;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.utils.ClassUtils;
@@ -84,7 +85,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         }
 
         BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this);
-
+        SimpleTypeConverter converter = new SimpleTypeConverter();
         try {
             for (PropertyValue pv : pvs){
                 String propertyName = pv.getName();
@@ -94,7 +95,8 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
                 PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
                 for (PropertyDescriptor pd : descriptors){
                     if (pd.getName().equals(propertyName)){
-                        pd.getWriteMethod().invoke(bean,resolvedValue);
+                        Object convertedValue = converter.convertIfNecessary(resolvedValue,pd.getPropertyType());
+                        pd.getWriteMethod().invoke(bean,convertedValue);
                         break;
                     }
                 }
