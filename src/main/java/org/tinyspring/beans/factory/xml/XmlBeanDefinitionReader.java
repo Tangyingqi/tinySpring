@@ -52,8 +52,6 @@ public class XmlBeanDefinitionReader {
     public void loadBeanDefinition(Resource resource) {
         InputStream is = null;
 
-        ClassLoader cl = ClassUtils.getDefaultClassLoader();
-
         try {
             is = resource.getInputStream();
         } catch (IOException e) {
@@ -120,11 +118,9 @@ public class XmlBeanDefinitionReader {
             if (!StringUtils.hasText(refName)){
                 logger.error(elementName + " contains empty 'ref' attribute");
             }
-            RuntimeBeanReference ref = new RuntimeBeanReference(refName);
-            return ref;
+            return new RuntimeBeanReference(refName);
         }else if(hasValueAttribute){
-            TypedStringValue value = new TypedStringValue(ele.attributeValue(VAULE_ATTRIBUTE));
-            return value;
+            return  new TypedStringValue(ele.attributeValue(VAULE_ATTRIBUTE));
         }else{
             throw new RuntimeException(elementName + "must specify a ref or value");
         }
