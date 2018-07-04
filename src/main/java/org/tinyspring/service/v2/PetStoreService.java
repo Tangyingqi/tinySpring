@@ -12,6 +12,15 @@ public class PetStoreService {
     private ItemDao itemDao;
     private String owner;
     private int version;
+    private boolean power;
+
+    public boolean isPower() {
+        return power;
+    }
+
+    public void setPower(boolean power) {
+        this.power = power;
+    }
 
     public int getVersion() {
         return version;
