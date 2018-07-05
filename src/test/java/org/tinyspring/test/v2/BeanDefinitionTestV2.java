@@ -30,7 +30,7 @@ public class BeanDefinitionTestV2 {
 
         List<PropertyValue> pvs = bd.getPropertyValues();
 
-        assertEquals(2, pvs.size());
+        assertEquals(5, pvs.size());
 
         {
             PropertyValue pv = getPropertyValue("accountDao",pvs);
