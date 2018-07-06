@@ -9,7 +9,7 @@ public class BeanDefinitionStoreException extends BeansException {
 
 
     public BeanDefinitionStoreException(String msg) {
-        super(msg);
+        this(msg,null);
     }
 
     public BeanDefinitionStoreException(String msg, Throwable cause) {

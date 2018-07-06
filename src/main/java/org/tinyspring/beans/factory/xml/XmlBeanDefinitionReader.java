@@ -98,14 +98,14 @@ public class XmlBeanDefinitionReader {
                 logger.fatal("Tag 'property' must have a 'name' attribute");
             }
 
-            Object val = parsePropertyValue(propElement,bd,propName);
+            Object val = parsePropertyValue(propElement,propName);
             PropertyValue pv = new PropertyValue(propName,val);
 
             bd.getPropertyValues().add(pv);
         }
     }
 
-    private Object parsePropertyValue(Element ele, BeanDefinition bd, String propName) {
+    private Object parsePropertyValue(Element ele, String propName) {
 
         String elementName = propName != null ?
                 "<property> element for property'"+propName+"'" :

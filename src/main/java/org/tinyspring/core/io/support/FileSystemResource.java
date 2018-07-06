@@ -14,13 +14,10 @@ import java.io.InputStream;
  */
 public class FileSystemResource implements Resource {
 
-    private final String path;
     private final File file;
 
     public FileSystemResource(String path) {
-        Assert.notNull(path, "Path must be not null");
         this.file = new File(path);
-        this.path = path;
     }
 
     public InputStream getInputStream() throws IOException {

@@ -7,7 +7,6 @@ import org.tinyspring.beans.factory.BeanCreationException;
 import org.tinyspring.beans.factory.BeanDefinitionStoreException;
 import org.tinyspring.beans.factory.support.DefaultBeanFactory;
 import org.tinyspring.beans.factory.xml.XmlBeanDefinitionReader;
-import org.tinyspring.core.io.Resource;
 import org.tinyspring.core.io.support.ClassPathResource;
 import org.tinyspring.service.v1.PetStoreService;
 

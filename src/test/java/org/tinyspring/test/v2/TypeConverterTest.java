@@ -33,7 +33,7 @@ public class TypeConverterTest {
     public void testConvertStringToBoolean(){
         TypeConverter converter = new SimpleTypeConverter();
         Boolean b = converter.convertIfNecessary("true", Boolean.class);
-        Assert.assertEquals(true,b.booleanValue());
+        Assert.assertTrue(b);
 
         try{
             converter.convertIfNecessary("xxxyyyzzz", Boolean.class);

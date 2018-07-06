@@ -21,7 +21,7 @@ public class CustomNumberEditorTest {
         Assert.assertEquals(3, ((Integer) editor.getValue()).intValue());
 
         editor.setAsText("");
-        Assert.assertTrue(editor.getValue() == null);
+        Assert.assertNull(editor.getValue());
 
         try {
             editor.setAsText("3.1");
