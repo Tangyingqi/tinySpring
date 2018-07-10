@@ -19,21 +19,21 @@ import java.util.Map;
  * Created by tangyingqi on 2018/6/26.
  */
 public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
-        implements ConfigurableBeanFactory,BeanDefinitionRegistry {
+        implements ConfigurableBeanFactory, BeanDefinitionRegistry {
 
 
     private ClassLoader classLoader;
 
-    private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
+    private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
 
 
     public BeanDefinition getBeanDefinition(String beanID) {
-        
+
         return beanDefinitionMap.get(beanID);
     }
 
     public void registerBeanDefinition(String beanId, BeanDefinition bd) {
-        this.beanDefinitionMap.put(beanId,bd);
+        this.beanDefinitionMap.put(beanId, bd);
     }
 
     public Object getBean(String beanID) {
@@ -43,11 +43,11 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
             return null;
         }
 
-        if (beanDefinition.isSingleton()){
+        if (beanDefinition.isSingleton()) {
             Object bean = this.getSingleton(beanID);
-            if (bean == null){
+            if (bean == null) {
                 bean = createBean(beanDefinition);
-                this.registrySingleton(beanID,bean);
+                this.registrySingleton(beanID, bean);
             }
             return bean;
         }
@@ -55,16 +55,21 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
     }
 
-    private Object createBean(BeanDefinition bd){
+    private Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);
 
-        populateBean(bd,bean);
+        populateBean(bd, bean);
 
         return bean;
     }
 
     private Object instantiateBean(BeanDefinition beanDefinition) {
+
+        if (beanDefinition.hasConstructorArgumentValues()) {
+            ConstructorResolver resolver = new ConstructorResolver(this);
+            return resolver.autowireConstructor(beanDefinition);
+        }
 
         ClassLoader cl = this.getBeanClassLoader();
         String beanClassName = beanDefinition.getBeanClassName();
@@ -72,37 +77,37 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
             Class<?> clz = cl.loadClass(beanClassName);
             return clz.newInstance();
         } catch (Exception e) {
-            throw new BeanCreationException("create bean for"+ beanClassName+"failed",e);
+            throw new BeanCreationException("create bean for" + beanClassName + "failed", e);
         }
     }
 
-    protected void populateBean(BeanDefinition bd,Object bean){
+    protected void populateBean(BeanDefinition bd, Object bean) {
 
         List<PropertyValue> pvs = bd.getPropertyValues();
 
-        if (pvs == null || pvs.isEmpty()){
+        if (pvs == null || pvs.isEmpty()) {
             return;
         }
 
         BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this);
         SimpleTypeConverter converter = new SimpleTypeConverter();
         try {
-            for (PropertyValue pv : pvs){
+            for (PropertyValue pv : pvs) {
                 String propertyName = pv.getName();
                 Object originalValue = pv.getValue();
                 Object resolvedValue = valueResolver.resolveValueIfNecessary(originalValue);
                 BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
                 PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
-                for (PropertyDescriptor pd : descriptors){
-                    if (pd.getName().equals(propertyName)){
-                        Object convertedValue = converter.convertIfNecessary(resolvedValue,pd.getPropertyType());
-                        pd.getWriteMethod().invoke(bean,convertedValue);
+                for (PropertyDescriptor pd : descriptors) {
+                    if (pd.getName().equals(propertyName)) {
+                        Object convertedValue = converter.convertIfNecessary(resolvedValue, pd.getPropertyType());
+                        pd.getWriteMethod().invoke(bean, convertedValue);
                         break;
                     }
                 }
             }
-        }catch (Exception e){
-            throw new BeanCreationException("Failed to obtain BeanInfo for class["+ bd.getBeanClassName() +"]",e);
+        } catch (Exception e) {
+            throw new BeanCreationException("Failed to obtain BeanInfo for class[" + bd.getBeanClassName() + "]", e);
         }
     }
 
