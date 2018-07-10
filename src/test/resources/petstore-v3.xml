@@ -10,7 +10,7 @@
             <constructor-arg value="1"/>
         </bean>
 
-        <bean id="itemDao" class="org.tinyspring.dao.AccountDao"/>
+        <bean id="itemDao" class="org.tinyspring.dao.ItemDao"/>
 
-        <bean id="accountDao" class="org.tinyspring.dao.ItemDao"/>
+        <bean id="accountDao" class="org.tinyspring.dao.AccountDao"/>
 </beans>

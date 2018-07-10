@@ -1,5 +1,6 @@
 package org.tinyspring.beans.factory.support;
 
+import org.tinyspring.beans.factory.BeanFactory;
 import org.tinyspring.beans.factory.config.RuntimeBeanReference;
 import org.tinyspring.beans.factory.config.TypedStringValue;
 
@@ -9,9 +10,9 @@ import org.tinyspring.beans.factory.config.TypedStringValue;
  */
 public class BeanDefinitionValueResolver {
 
-    private final DefaultBeanFactory factory;
+    private final BeanFactory factory;
 
-    public BeanDefinitionValueResolver(DefaultBeanFactory factory) {
+    public BeanDefinitionValueResolver(BeanFactory factory) {
         this.factory = factory;
     }
 
