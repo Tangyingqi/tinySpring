@@ -1,7 +1,6 @@
 package org.tinyspring.core.type.classreading;
 
 import jdk.internal.org.objectweb.asm.ClassVisitor;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.springframework.asm.Opcodes;
 import org.springframework.asm.SpringAsmInfo;
 import org.tinyspring.core.type.ClassMetadata;
@@ -44,30 +43,37 @@ public class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMe
         }
     }
 
+    @Override
     public String getClassName() {
         return this.className;
     }
 
+    @Override
     public boolean isInterface() {
         return this.isInterface;
     }
 
+    @Override
     public boolean isAbstract() {
         return this.isAbstract;
     }
 
+    @Override
     public boolean isFinal() {
         return this.isFinal;
     }
 
+    @Override
     public boolean hasSuperClass() {
         return this.superClassName != null;
     }
 
+    @Override
     public String getSuperClassName() {
         return this.superClassName;
     }
 
+    @Override
     public String[] getInterfaceNames() {
         return this.interfaces;
     }
