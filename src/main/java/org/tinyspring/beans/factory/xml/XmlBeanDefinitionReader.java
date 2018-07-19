@@ -14,6 +14,7 @@ import org.tinyspring.beans.factory.config.RuntimeBeanReference;
 import org.tinyspring.beans.factory.config.TypedStringValue;
 import org.tinyspring.beans.factory.support.BeanDefinitionRegistry;
 import org.tinyspring.beans.factory.support.GenericBeanDefinition;
+import org.tinyspring.context.annotation.ClassPathBeanDefinitionScanner;
 import org.tinyspring.core.io.Resource;
 import org.tinyspring.utils.ClassUtils;
 import org.tinyspring.utils.StringUtils;
@@ -46,6 +47,12 @@ public class XmlBeanDefinitionReader {
 
     public static final String TYPE_ATTRIBUTE = "type";
 
+    public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
+
+    public static final String CONTEXT_NAMESPACE_URI = "http://www.springframework.org/schema/context";
+
+    private static final String BASE_PACKAGE_ATTRIBUTE = "base-package";
+
     BeanDefinitionRegistry registry;
 
     protected final Log logger = LogFactory.getLog(getClass());
@@ -70,16 +77,13 @@ public class XmlBeanDefinitionReader {
             Iterator<Element> iter = root.elementIterator();
             while (iter.hasNext()){
                 Element ele = iter.next();
-                String id = ele.attributeValue(ID_ATTRIBUTE);
-                String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
-                BeanDefinition bd = new GenericBeanDefinition(id,beanClassName);
-                String scope = ele.attributeValue(SCOPE_ATTRIBUTE);
-                if (scope != null){
-                    bd.setScope(scope);
+                String namespaceUri = ele.getNamespaceURI();
+
+                if (isDefaultNamespace(namespaceUri)){
+                    parseDefaultElements(ele);
+                }else if (isContextNamespace(namespaceUri)){
+                    parseComponentElement(ele);
                 }
-                parseConstructorArgElements(ele,bd);
-                parsePropertyElement(ele,bd);
-                this.registry.registerBeanDefinition(id,bd);
             }
         } catch (DocumentException e) {
             throw new BeanDefinitionStoreException("IOException parsing XML document failed");
@@ -92,6 +96,33 @@ public class XmlBeanDefinitionReader {
                 }
             }
         }
+    }
+
+    private void parseComponentElement(Element ele) {
+        String basePackages = ele.attributeValue(BASE_PACKAGE_ATTRIBUTE);
+        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
+        scanner.doScan(basePackages);
+    }
+
+    private void parseDefaultElements(Element ele) {
+
+        String id = ele.attributeValue(ID_ATTRIBUTE);
+        String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
+        BeanDefinition bd = new GenericBeanDefinition(id,beanClassName);
+        String scope = ele.attributeValue(SCOPE_ATTRIBUTE);
+        if (scope != null){
+            bd.setScope(scope);
+        }
+        parseConstructorArgElements(ele,bd);
+        parsePropertyElement(ele,bd);
+        this.registry.registerBeanDefinition(id,bd);
+    }
+
+    public boolean isDefaultNamespace(String namespaceUri) {
+        return (!StringUtils.hasLength(namespaceUri) || BEANS_NAMESPACE_URI.equals(namespaceUri));
+    }
+    public boolean isContextNamespace(String namespaceUri){
+        return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
     }
 
     public void parseConstructorArgElements(Element ele,BeanDefinition bd){
