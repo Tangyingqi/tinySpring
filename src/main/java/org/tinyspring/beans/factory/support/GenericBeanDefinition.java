@@ -26,40 +26,61 @@ public class GenericBeanDefinition implements BeanDefinition {
         this.beanClassName = beanClassName;
     }
 
+    public GenericBeanDefinition(){
+
+    }
+
+    public void setBeanClassName(String beanClassName) {
+        this.beanClassName = beanClassName;
+    }
+
+    @Override
     public String getBeanClassName() {
         return beanClassName;
     }
 
+    @Override
     public boolean isSingleton() {
         return this.singleton;
     }
 
+    @Override
     public boolean isProtoType() {
         return this.prototype;
     }
 
+    @Override
     public void setScope(String scope) {
         this.scope = scope;
         this.singleton = SCOPE_SINGLETON.equals(scope) || SCOPE_DEFAULT.equals(scope);
         this.prototype = SCOPE_PROTOTYPE.endsWith(scope);
     }
 
+    @Override
     public String getScope() {
         return scope;
     }
 
+    @Override
     public List<PropertyValue> getPropertyValues() {
         return this.propertyValues;
     }
 
+    @Override
     public ConstructorArgument getConstructorArgument() {
         return constructorArgument;
     }
 
+    @Override
     public String getID() {
         return this.id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
     public boolean hasConstructorArgumentValues() {
         return !constructorArgument.isEmpty();
     }

@@ -7,7 +7,6 @@ import org.tinyspring.beans.factory.BeanCreationException;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.utils.ClassUtils;
 
-import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -27,15 +26,18 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
 
 
+    @Override
     public BeanDefinition getBeanDefinition(String beanID) {
 
         return beanDefinitionMap.get(beanID);
     }
 
+    @Override
     public void registerBeanDefinition(String beanId, BeanDefinition bd) {
         this.beanDefinitionMap.put(beanId, bd);
     }
 
+    @Override
     public Object getBean(String beanID) {
 
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanID);
@@ -111,10 +113,12 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         }
     }
 
+    @Override
     public void setBeanClassLoader(ClassLoader beanClassLoader) {
         this.classLoader = beanClassLoader;
     }
 
+    @Override
     public ClassLoader getBeanClassLoader() {
 
         return classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader();
