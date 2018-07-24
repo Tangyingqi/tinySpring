@@ -16,6 +16,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     private ClassLoader classLoader;
 
+    @Override
     public Object getBean(String beanID) {
         return factory.getBean(beanID);
     }

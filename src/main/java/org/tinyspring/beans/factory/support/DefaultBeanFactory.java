@@ -5,6 +5,7 @@ import org.tinyspring.beans.PropertyValue;
 import org.tinyspring.beans.SimpleTypeConverter;
 import org.tinyspring.beans.factory.BeanCreationException;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
+import org.tinyspring.beans.factory.config.DependencyDescriptor;
 import org.tinyspring.utils.ClassUtils;
 
 import java.beans.BeanInfo;
@@ -122,5 +123,30 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     public ClassLoader getBeanClassLoader() {
 
         return classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader();
+    }
+
+    @Override
+    public Object resolveDependency(DependencyDescriptor descriptor) {
+        Class<?> typeToMatch = descriptor.getDependencyType();
+        for (BeanDefinition bd : beanDefinitionMap.values()) {
+            resolveBeanClass(bd);
+            Class<?> beanClass = bd.getBeanClass();
+            if (typeToMatch.isAssignableFrom(beanClass)){
+                return this.getBean(bd.getID());
+            }
+        }
+        return null;
+    }
+
+    private void resolveBeanClass(BeanDefinition bd) {
+        if (bd.hasBeanClass()) {
+            return;
+        } else {
+            try {
+                bd.resolveBeanClass(this.getBeanClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("can't load class:"+bd.getBeanClassName());
+            }
+        }
     }
 }

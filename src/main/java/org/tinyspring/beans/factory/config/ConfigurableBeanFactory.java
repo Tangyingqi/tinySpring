@@ -1,12 +1,10 @@
 package org.tinyspring.beans.factory.config;
 
-import org.tinyspring.beans.factory.BeanFactory;
-
 /**
  * @author tangyingqi
  * @date 2018/6/27
  */
-public interface ConfigurableBeanFactory extends BeanFactory {
+public interface ConfigurableBeanFactory extends AutowireCapableBeanFactory {
 
     void setBeanClassLoader(ClassLoader beanClassLoader);
 
