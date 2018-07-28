@@ -11,8 +11,8 @@ public class InjectionMetadata {
     private final Class<?> targetClass;
     private List<InjectionElement> injectionElements;
 
-    public InjectionMetadata(Class<?> targeClass,List<InjectionElement> injectionElements){
-        this.targetClass = targeClass;
+    public InjectionMetadata(Class<?> targetClass,List<InjectionElement> injectionElements){
+        this.targetClass = targetClass;
         this.injectionElements = injectionElements;
     }
 
