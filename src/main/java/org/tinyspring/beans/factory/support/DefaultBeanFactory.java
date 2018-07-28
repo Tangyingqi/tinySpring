@@ -4,13 +4,16 @@ import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.PropertyValue;
 import org.tinyspring.beans.SimpleTypeConverter;
 import org.tinyspring.beans.factory.BeanCreationException;
+import org.tinyspring.beans.factory.config.BeanPostProcessor;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.beans.factory.config.DependencyDescriptor;
+import org.tinyspring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.tinyspring.utils.ClassUtils;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,8 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     private ClassLoader classLoader;
 
     private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
+
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
 
     @Override
@@ -86,6 +91,12 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
     protected void populateBean(BeanDefinition bd, Object bean) {
 
+        for (BeanPostProcessor processor : this.getBeanPostProcessors()){
+            if (processor instanceof InstantiationAwareBeanPostProcessor){
+                ((InstantiationAwareBeanPostProcessor) processor).postProcessPropertyValues(bean,bd.getID());
+            }
+        }
+
         List<PropertyValue> pvs = bd.getPropertyValues();
 
         if (pvs == null || pvs.isEmpty()) {
@@ -123,6 +134,16 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     public ClassLoader getBeanClassLoader() {
 
         return classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader();
+    }
+
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
     }
 
     @Override

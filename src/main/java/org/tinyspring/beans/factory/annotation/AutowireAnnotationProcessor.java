@@ -1,12 +1,16 @@
 package org.tinyspring.beans.factory.annotation;
 
-import com.sun.deploy.util.ReflectionUtil;
+import org.tinyspring.beans.factory.BeanCreationException;
 import org.tinyspring.beans.factory.config.AutowireCapableBeanFactory;
+import org.tinyspring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.tinyspring.core.annotation.AnnotationUtils;
 import org.tinyspring.utils.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -15,7 +19,7 @@ import java.util.Set;
  * @author tangyingqi
  * @date 2018/7/28
  */
-public class AutowireAnnotationProcessor {
+public class AutowireAnnotationProcessor implements InstantiationAwareBeanPostProcessor {
 
     private AutowireCapableBeanFactory beanFactory;
     private String requiredParameterName = "required";
@@ -82,4 +86,33 @@ public class AutowireAnnotationProcessor {
     }
 
 
+    @Override
+    public Object beforeInstantiation(Class<?> beanClass, String beanName) {
+        return null;
+    }
+
+    @Override
+    public boolean afterInstantiation(Object bean, String beanName) {
+        return false;
+    }
+
+    @Override
+    public void postProcessPropertyValues(Object bean, String beanName) {
+        InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
+        try {
+            metadata.inject(bean);
+        }catch (Throwable ex){
+            throw new BeanCreationException(beanName, "Injection of autowired dependencies failed", ex);
+        }
+    }
+
+    @Override
+    public Object beforeInitialization(Object bean, String beanName) {
+        return null;
+    }
+
+    @Override
+    public Object afterInitialization(Object bean, String beanName) {
+        return null;
+    }
 }

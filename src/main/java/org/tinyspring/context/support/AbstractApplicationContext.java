@@ -1,5 +1,7 @@
 package org.tinyspring.context.support;
 
+import org.tinyspring.beans.factory.annotation.AutowireAnnotationProcessor;
+import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.beans.factory.support.DefaultBeanFactory;
 import org.tinyspring.beans.factory.xml.XmlBeanDefinitionReader;
 import org.tinyspring.context.ApplicationContext;
@@ -31,6 +33,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         Resource resource = this.getResourceByPath(configFile);
         reader.loadBeanDefinition(resource);
         factory.setBeanClassLoader(cl);
+        registerBeanPostProcessors(factory);
     }
 
     protected abstract Resource getResourceByPath(String path);
@@ -41,5 +44,12 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     public ClassLoader getBeanClassLoader() {
         return classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader();
+    }
+
+    protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory){
+
+        AutowireAnnotationProcessor postProcessor = new AutowireAnnotationProcessor();
+        postProcessor.setBeanFactory(beanFactory);
+        beanFactory.addBeanPostProcessor(postProcessor);
     }
 }
