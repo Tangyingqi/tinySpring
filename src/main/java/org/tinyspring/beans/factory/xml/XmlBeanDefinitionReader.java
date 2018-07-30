@@ -66,32 +66,28 @@ public class XmlBeanDefinitionReader {
 
         try {
             is = resource.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        SAXReader reader = new SAXReader();
-        try {
+            SAXReader reader = new SAXReader();
             Document document = reader.read(is);
             Element root = document.getRootElement();
             Iterator<Element> iter = root.elementIterator();
-            while (iter.hasNext()){
+            while (iter.hasNext()) {
                 Element ele = iter.next();
                 String namespaceUri = ele.getNamespaceURI();
 
-                if (isDefaultNamespace(namespaceUri)){
+                if (isDefaultNamespace(namespaceUri)) {
                     parseDefaultElements(ele);
-                }else if (isContextNamespace(namespaceUri)){
+                } else if (isContextNamespace(namespaceUri)) {
                     parseComponentElement(ele);
                 }
             }
-        } catch (DocumentException e) {
-            throw new BeanDefinitionStoreException("IOException parsing XML document failed");
-        }finally {
-            if (is != null){
+        } catch (Exception e) {
+            throw new BeanDefinitionStoreException("IOException parsing XML document failed"+ resource.getDescription(),e);
+        } finally {
+            if (is != null) {
                 try {
                     is.close();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -108,59 +104,60 @@ public class XmlBeanDefinitionReader {
 
         String id = ele.attributeValue(ID_ATTRIBUTE);
         String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
-        BeanDefinition bd = new GenericBeanDefinition(id,beanClassName);
+        BeanDefinition bd = new GenericBeanDefinition(id, beanClassName);
         String scope = ele.attributeValue(SCOPE_ATTRIBUTE);
-        if (scope != null){
+        if (scope != null) {
             bd.setScope(scope);
         }
-        parseConstructorArgElements(ele,bd);
-        parsePropertyElement(ele,bd);
-        this.registry.registerBeanDefinition(id,bd);
+        parseConstructorArgElements(ele, bd);
+        parsePropertyElement(ele, bd);
+        this.registry.registerBeanDefinition(id, bd);
     }
 
     public boolean isDefaultNamespace(String namespaceUri) {
         return (!StringUtils.hasLength(namespaceUri) || BEANS_NAMESPACE_URI.equals(namespaceUri));
     }
-    public boolean isContextNamespace(String namespaceUri){
+
+    public boolean isContextNamespace(String namespaceUri) {
         return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
     }
 
-    public void parseConstructorArgElements(Element ele,BeanDefinition bd){
+    public void parseConstructorArgElements(Element ele, BeanDefinition bd) {
         Iterator iterator = ele.elementIterator(CONSTRUCTOR_ARG_ELEMENT);
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Element element = (Element) iterator.next();
-            parseConstructorArgElement(element,bd);
+            parseConstructorArgElement(element, bd);
         }
     }
 
-    public void parseConstructorArgElement(Element ele,BeanDefinition bd){
+    public void parseConstructorArgElement(Element ele, BeanDefinition bd) {
 
         String typeAttr = ele.attributeValue(TYPE_ATTRIBUTE);
         String nameAttr = ele.attributeValue(NAME_ATTRIBUTE);
-        Object value = parsePropertyValue(ele,null);
+        Object value = parsePropertyValue(ele, null);
         ConstructorArgument.ValueHolder valueHolder = new ConstructorArgument.ValueHolder(value);
-        if (StringUtils.hasLength(typeAttr)){
+        if (StringUtils.hasLength(typeAttr)) {
             valueHolder.setType(typeAttr);
         }
-        if (StringUtils.hasLength(nameAttr)){
+        if (StringUtils.hasLength(nameAttr)) {
             valueHolder.setName(nameAttr);
         }
 
         bd.getConstructorArgument().addArgumentValue(valueHolder);
     }
 
-    public void parsePropertyElement(Element beanElement,BeanDefinition bd){
+    public void parsePropertyElement(Element beanElement, BeanDefinition bd) {
 
         Iterator iterator = beanElement.elementIterator(PROPERTY_ELEMENT);
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Element propElement = (Element) iterator.next();
             String propName = propElement.attributeValue(NAME_ATTRIBUTE);
-            if (!StringUtils.hasLength(propName)){
+            if (!StringUtils.hasLength(propName)) {
                 logger.fatal("Tag 'property' must have a 'name' attribute");
             }
 
-            Object val = parsePropertyValue(propElement,propName);
-            PropertyValue pv = new PropertyValue(propName,val);
+            Object val = parsePropertyValue(propElement, propName);
+            PropertyValue pv = new PropertyValue(propName, val);
 
             bd.getPropertyValues().add(pv);
         }
@@ -169,20 +166,20 @@ public class XmlBeanDefinitionReader {
     private Object parsePropertyValue(Element ele, String propName) {
 
         String elementName = propName != null ?
-                "<property> element for property'"+propName+"'" :
+                "<property> element for property'" + propName + "'" :
                 "<constructor-arg> element";
         boolean hasRefAttribute = ele.attribute(REF_ATTRIBUTE) != null;
         boolean hasValueAttribute = ele.attribute(VAULE_ATTRIBUTE) != null;
 
-        if (hasRefAttribute){
+        if (hasRefAttribute) {
             String refName = ele.attributeValue(REF_ATTRIBUTE);
-            if (!StringUtils.hasText(refName)){
+            if (!StringUtils.hasText(refName)) {
                 logger.error(elementName + " contains empty 'ref' attribute");
             }
             return new RuntimeBeanReference(refName);
-        }else if(hasValueAttribute){
-            return  new TypedStringValue(ele.attributeValue(VAULE_ATTRIBUTE));
-        }else{
+        } else if (hasValueAttribute) {
+            return new TypedStringValue(ele.attributeValue(VAULE_ATTRIBUTE));
+        } else {
             throw new RuntimeException(elementName + "must specify a ref or value");
         }
     }
