@@ -9,10 +9,10 @@
 			http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan
-            base-package="org.litespring.service.v5,org.litespring.dao.v5">
+            base-package="org.tinyspring.service.v5,org.tinyspring.dao.v5">
     </context:component-scan>
 
-    <bean id="tx" class="org.litespring.tx.TransactionManager" />
+    <bean id="tx" class="org.tinyspring.tx.TransactionManager" />
 
     <aop:config>
 

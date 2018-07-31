@@ -4,6 +4,7 @@ import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.PropertyValue;
 import org.tinyspring.beans.SimpleTypeConverter;
 import org.tinyspring.beans.factory.BeanCreationException;
+import org.tinyspring.beans.factory.NoSuchBeanDefinitionException;
 import org.tinyspring.beans.factory.config.BeanPostProcessor;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.beans.factory.config.DependencyDescriptor;
@@ -63,6 +64,16 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
     }
 
+    @Override
+    public Class<?> getType(String name) {
+        BeanDefinition bd = getBeanDefinition(name);
+        if (bd == null) {
+            throw new NoSuchBeanDefinitionException(name);
+        }
+        resolveBeanClass(bd);
+        return bd.getBeanClass();
+    }
+
     private Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);
@@ -91,9 +102,9 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
     protected void populateBean(BeanDefinition bd, Object bean) {
 
-        for (BeanPostProcessor processor : this.getBeanPostProcessors()){
-            if (processor instanceof InstantiationAwareBeanPostProcessor){
-                ((InstantiationAwareBeanPostProcessor) processor).postProcessPropertyValues(bean,bd.getID());
+        for (BeanPostProcessor processor : this.getBeanPostProcessors()) {
+            if (processor instanceof InstantiationAwareBeanPostProcessor) {
+                ((InstantiationAwareBeanPostProcessor) processor).postProcessPropertyValues(bean, bd.getID());
             }
         }
 
@@ -152,7 +163,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         for (BeanDefinition bd : beanDefinitionMap.values()) {
             resolveBeanClass(bd);
             Class<?> beanClass = bd.getBeanClass();
-            if (typeToMatch.isAssignableFrom(beanClass)){
+            if (typeToMatch.isAssignableFrom(beanClass)) {
                 return this.getBean(bd.getID());
             }
         }
@@ -166,7 +177,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
             try {
                 bd.resolveBeanClass(this.getBeanClassLoader());
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException("can't load class:"+bd.getBeanClassName());
+                throw new RuntimeException("can't load class:" + bd.getBeanClassName());
             }
         }
     }
