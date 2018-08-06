@@ -16,6 +16,7 @@ public class SimpleTypeConverter implements TypeConverter {
 
     private Map<Class<?>,PropertyEditor> defaultEditors;
 
+    @Override
     public <T> T convertIfNecessary(Object value, Class<T> requiredType) throws TypeMismatchException {
         if (ClassUtils.isAssignableValue(requiredType,value)){
             return (T)value;
