@@ -15,19 +15,19 @@ public abstract class AbstractAspectJAdvice implements Advice {
 
     protected Method adviceMethod;
     protected AspectJExpressionPointcut pointcut;
-    protected AspectInstanceFactory aspectInstanceFactory;
+    protected AspectInstanceFactory adviceObjectFactory;
 
     public AbstractAspectJAdvice(Method adviceMethod,
                                  AspectJExpressionPointcut pointcut,
-                                 AspectInstanceFactory aspectInstanceFactory){
+                                 AspectInstanceFactory adviceObjectFactory){
 
         this.adviceMethod = adviceMethod;
         this.pointcut = pointcut;
-        this.aspectInstanceFactory = aspectInstanceFactory;
+        this.adviceObjectFactory = adviceObjectFactory;
     }
 
     public void invokeAdviceMethod() throws InvocationTargetException, IllegalAccessException {
-        adviceMethod.invoke(aspectInstanceFactory.getAspectInstance());
+        adviceMethod.invoke(adviceObjectFactory.getAspectInstance());
     }
 
     @Override
@@ -37,5 +37,9 @@ public abstract class AbstractAspectJAdvice implements Advice {
 
     public Method getAdviceMethod() {
         return adviceMethod;
+    }
+
+    public Object getAdviceInstance(){
+        return adviceObjectFactory.getAspectInstance();
     }
 }

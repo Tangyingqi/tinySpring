@@ -19,6 +19,10 @@ public class PetStoreService {
     @Autowired
     ItemDao itemDao;
 
+    public PetStoreService() {
+
+    }
+
     public ItemDao getItemDao() {
         return itemDao;
     }

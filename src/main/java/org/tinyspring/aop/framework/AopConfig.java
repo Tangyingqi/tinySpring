@@ -17,7 +17,7 @@ public interface AopConfig {
 
     boolean isProxyTargetClass();
 
-    Class<?> getProxiedInterfaces();
+    Class<?>[] getProxiedInterfaces();
 
     boolean isInterfaceProxied(Class<?> intf);
 

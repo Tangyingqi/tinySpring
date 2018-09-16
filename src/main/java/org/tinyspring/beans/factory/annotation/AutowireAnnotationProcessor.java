@@ -93,7 +93,7 @@ public class AutowireAnnotationProcessor implements InstantiationAwareBeanPostPr
 
     @Override
     public boolean afterInstantiation(Object bean, String beanName) {
-        return false;
+        return true;
     }
 
     @Override
@@ -108,11 +108,11 @@ public class AutowireAnnotationProcessor implements InstantiationAwareBeanPostPr
 
     @Override
     public Object beforeInitialization(Object bean, String beanName) {
-        return null;
+        return bean;
     }
 
     @Override
     public Object afterInitialization(Object bean, String beanName) {
-        return null;
+        return bean;
     }
 }

@@ -19,9 +19,9 @@ public class ConstructorResolver {
 
     private final Log logger = LogFactory.getLog(getClass());
 
-    private final ConfigurableBeanFactory beanFactory;
+    private final AbstractBeanFactory beanFactory;
 
-    public ConstructorResolver(ConfigurableBeanFactory factory) {
+    public ConstructorResolver(AbstractBeanFactory factory) {
         this.beanFactory = factory;
     }
 

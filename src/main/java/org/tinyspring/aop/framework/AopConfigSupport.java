@@ -2,6 +2,7 @@ package org.tinyspring.aop.framework;
 
 import org.tinyspring.aop.Advice;
 import org.tinyspring.aop.Pointcut;
+import org.tinyspring.utils.Assert;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class AopConfigSupport implements AopConfig{
     }
 
     @Override
-    public Class<?> getProxiedInterfaces() {
-        return null;
+    public Class<?>[] getProxiedInterfaces() {
+        return this.interfaces.toArray(new Class[this.interfaces.size()]);
     }
 
     @Override
@@ -73,4 +74,17 @@ public class AopConfigSupport implements AopConfig{
     public void setTargetObject(Object obj) {
         this.targetObject = obj;
     }
+
+
+    public void addInterface(Class<?> intf) {
+        Assert.notNull(intf, "Interface must not be null");
+        if (!intf.isInterface()) {
+            throw new IllegalArgumentException("[" + intf.getName() + "] is not an interface");
+        }
+        if (!this.interfaces.contains(intf)) {
+            this.interfaces.add(intf);
+
+        }
+    }
+
 }

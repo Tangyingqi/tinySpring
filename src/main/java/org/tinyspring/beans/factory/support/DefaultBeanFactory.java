@@ -1,9 +1,11 @@
 package org.tinyspring.beans.factory.support;
 
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.PropertyValue;
 import org.tinyspring.beans.SimpleTypeConverter;
 import org.tinyspring.beans.factory.BeanCreationException;
+import org.tinyspring.beans.factory.BeanFactoryAware;
 import org.tinyspring.beans.factory.NoSuchBeanDefinitionException;
 import org.tinyspring.beans.factory.config.BeanPostProcessor;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
@@ -22,8 +24,8 @@ import java.util.Map;
 /**
  * Created by tangyingqi on 2018/6/26.
  */
-public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
-        implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+public class DefaultBeanFactory extends AbstractBeanFactory
+        implements BeanDefinitionRegistry {
 
 
     private ClassLoader classLoader;
@@ -42,6 +44,26 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     @Override
     public void registerBeanDefinition(String beanId, BeanDefinition bd) {
         this.beanDefinitionMap.put(beanId, bd);
+    }
+
+    @Override
+    public List<Object> getBeansByType(Class<?> type){
+        List<Object> result = new ArrayList<>();
+        List<String> beanIDs = this.getBeanIDsByType(type);
+        for (String beanID : beanIDs){
+            result.add(this.getBean(beanID));
+        }
+        return result;
+    }
+
+    private List<String> getBeanIDsByType(Class<?> type){
+        List<String> result = new ArrayList<>();
+        for (String beanName : this.beanDefinitionMap.keySet()){
+            if (type.isAssignableFrom(this.getType(beanName))){
+                result.add(beanName);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -74,13 +96,39 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         return bd.getBeanClass();
     }
 
-    private Object createBean(BeanDefinition bd) {
+    @Override
+    protected Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);
 
         populateBean(bd, bean);
 
+        bean = initializeBean(bd,bean);
+
         return bean;
+    }
+
+    private Object initializeBean(BeanDefinition bd, Object bean) {
+        invokeAwareMethods(bean);
+        if (!bd.isSynthetic()){
+            return applyBeanPostProcessorsAfterInitialization(bean,bd.getID());
+        }
+        return bean;
+    }
+
+    private Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) {
+
+        Object result = existingBean;
+        for (BeanPostProcessor beanPostProcessor: getBeanPostProcessors()){
+            result = beanPostProcessor.afterInitialization(result,beanName);
+        }
+        return result;
+    }
+
+    private void invokeAwareMethods(Object bean) {
+        if (bean instanceof BeanFactoryAware){
+            ((BeanFactoryAware)bean).setBeanFactory(this);
+        }
     }
 
     private Object instantiateBean(BeanDefinition beanDefinition) {

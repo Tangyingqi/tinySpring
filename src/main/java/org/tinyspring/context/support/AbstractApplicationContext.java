@@ -1,5 +1,6 @@
 package org.tinyspring.context.support;
 
+import org.tinyspring.aop.aspectj.AspectJAutoProxyCreator;
 import org.tinyspring.beans.factory.annotation.AutowireAnnotationProcessor;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.beans.factory.support.DefaultBeanFactory;
@@ -7,6 +8,8 @@ import org.tinyspring.beans.factory.xml.XmlBeanDefinitionReader;
 import org.tinyspring.context.ApplicationContext;
 import org.tinyspring.core.io.Resource;
 import org.tinyspring.utils.ClassUtils;
+
+import java.util.List;
 
 /**
  * @author tangyingqi
@@ -47,14 +50,26 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     }
 
     protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory){
+        {
+            AutowireAnnotationProcessor postProcessor = new AutowireAnnotationProcessor();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
 
-        AutowireAnnotationProcessor postProcessor = new AutowireAnnotationProcessor();
-        postProcessor.setBeanFactory(beanFactory);
-        beanFactory.addBeanPostProcessor(postProcessor);
+        {
+            AspectJAutoProxyCreator postProcessor = new AspectJAutoProxyCreator();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
     }
 
     @Override
     public Class<?> getType(String name) {
         return factory.getType(name);
+    }
+
+    @Override
+    public List<Object> getBeansByType(Class<?> type) {
+        return factory.getBeansByType(type);
     }
 }
