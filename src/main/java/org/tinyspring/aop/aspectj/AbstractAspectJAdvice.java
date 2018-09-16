@@ -2,6 +2,7 @@ package org.tinyspring.aop.aspectj;
 
 import org.tinyspring.aop.Advice;
 import org.tinyspring.aop.Pointcut;
+import org.tinyspring.aop.config.AspectInstanceFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,19 +15,19 @@ public abstract class AbstractAspectJAdvice implements Advice {
 
     protected Method adviceMethod;
     protected AspectJExpressionPointcut pointcut;
-    protected Object adviceObject;
+    protected AspectInstanceFactory aspectInstanceFactory;
 
     public AbstractAspectJAdvice(Method adviceMethod,
                                  AspectJExpressionPointcut pointcut,
-                                 Object adviceObject){
+                                 AspectInstanceFactory aspectInstanceFactory){
 
         this.adviceMethod = adviceMethod;
         this.pointcut = pointcut;
-        this.adviceObject = adviceObject;
+        this.aspectInstanceFactory = aspectInstanceFactory;
     }
 
     public void invokeAdviceMethod() throws InvocationTargetException, IllegalAccessException {
-        adviceMethod.invoke(adviceObject);
+        adviceMethod.invoke(aspectInstanceFactory.getAspectInstance());
     }
 
     @Override

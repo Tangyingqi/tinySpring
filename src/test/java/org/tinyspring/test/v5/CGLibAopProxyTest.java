@@ -6,9 +6,11 @@ import org.junit.Test;
 import org.tinyspring.aop.aspectj.AspectJAfterReturningAdvice;
 import org.tinyspring.aop.aspectj.AspectJBeforeAdvice;
 import org.tinyspring.aop.aspectj.AspectJExpressionPointcut;
+import org.tinyspring.aop.config.AspectInstanceFactory;
 import org.tinyspring.aop.framework.AopConfig;
 import org.tinyspring.aop.framework.AopConfigSupport;
 import org.tinyspring.aop.framework.CglibProxyFactory;
+import org.tinyspring.beans.factory.BeanFactory;
 import org.tinyspring.service.v5.PetStoreService;
 import org.tinyspring.tx.TransactionManager;
 import org.tinyspring.util.MessageTracker;
@@ -19,36 +21,40 @@ import java.util.List;
  * @author tangyingqi
  * @date 2018/8/7
  */
-public class CGLibAopProxyTest {
+public class CGLibAopProxyTest extends AbstractTest {
 
     private static AspectJBeforeAdvice beforeAdvice = null;
     private static AspectJAfterReturningAdvice afterReturningAdvice = null;
     private static AspectJExpressionPointcut pc = null;
 
-    private TransactionManager tx;
+    private BeanFactory beanFactory;
+    private AspectInstanceFactory aspectInstanceFactory;
 
     @Before
     public void setUp() throws NoSuchMethodException {
 
-        tx = new TransactionManager();
         String expression = "execution(* org.tinyspring.service.v5.*.placeOrder(..))";
         pc = new AspectJExpressionPointcut();
         pc.setExpression(expression);
 
+        beanFactory = this.getBeanFactory("petstore-v5.xml");
+        aspectInstanceFactory = this.getAspectInstanceFactory("tx");
+        aspectInstanceFactory.setBeanFactory(beanFactory);
+
         beforeAdvice = new AspectJBeforeAdvice(
                 TransactionManager.class.getMethod("start"),
                 pc,
-                tx);
+                aspectInstanceFactory);
 
         afterReturningAdvice = new AspectJAfterReturningAdvice(
                 TransactionManager.class.getMethod("commit"),
                 pc,
-                tx
+                aspectInstanceFactory
         );
     }
 
     @Test
-    public void testGetProxy(){
+    public void testGetProxy() {
 
         AopConfig config = new AopConfigSupport();
         config.addAdvice(beforeAdvice);
@@ -57,7 +63,7 @@ public class CGLibAopProxyTest {
 
         CglibProxyFactory proxyFactory = new CglibProxyFactory(config);
 
-        PetStoreService proxy = (PetStoreService)proxyFactory.getProxy();
+        PetStoreService proxy = (PetStoreService) proxyFactory.getProxy();
 
         proxy.placeOrder();
 

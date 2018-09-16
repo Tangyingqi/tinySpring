@@ -1,6 +1,7 @@
 package org.tinyspring.aop.aspectj;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.tinyspring.aop.config.AspectInstanceFactory;
 
 import java.lang.reflect.Method;
 
@@ -10,8 +11,8 @@ import java.lang.reflect.Method;
  */
 public class AspectJAfterThrowingAdvice extends AbstractAspectJAdvice {
 
-    public AspectJAfterThrowingAdvice(Method adviceMethod, AspectJExpressionPointcut pointcut, Object adviceObject) {
-        super(adviceMethod, pointcut, adviceObject);
+    public AspectJAfterThrowingAdvice(Method adviceMethod, AspectJExpressionPointcut pointcut, AspectInstanceFactory aspectInstanceFactory) {
+        super(adviceMethod, pointcut, aspectInstanceFactory);
     }
 
     @Override

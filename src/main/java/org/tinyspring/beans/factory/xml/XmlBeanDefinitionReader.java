@@ -6,6 +6,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.tinyspring.aop.config.ConfigBeanDefinitionParser;
 import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.ConstructorArgument;
 import org.tinyspring.beans.PropertyValue;
@@ -51,6 +52,8 @@ public class XmlBeanDefinitionReader {
 
     public static final String CONTEXT_NAMESPACE_URI = "http://www.springframework.org/schema/context";
 
+    public static final String AOP_NAMESPACE_URI = "http://www.springframework.org/schema/aop";
+
     private static final String BASE_PACKAGE_ATTRIBUTE = "base-package";
 
     BeanDefinitionRegistry registry;
@@ -79,6 +82,8 @@ public class XmlBeanDefinitionReader {
                     parseDefaultElements(ele);
                 } else if (isContextNamespace(namespaceUri)) {
                     parseComponentElement(ele);
+                }else if(this.isAOPNamespace(namespaceUri)){
+                    parseAOPElement(ele);
                 }
             }
         } catch (Exception e) {
@@ -92,6 +97,11 @@ public class XmlBeanDefinitionReader {
                 }
             }
         }
+    }
+
+    private void parseAOPElement(Element ele) {
+        ConfigBeanDefinitionParser parser = new ConfigBeanDefinitionParser();
+        parser.parse(ele, this.registry);
     }
 
     private void parseComponentElement(Element ele) {
@@ -120,6 +130,9 @@ public class XmlBeanDefinitionReader {
 
     public boolean isContextNamespace(String namespaceUri) {
         return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
+    }
+    public boolean isAOPNamespace(String namespaceUri){
+        return (!StringUtils.hasLength(namespaceUri) || AOP_NAMESPACE_URI.equals(namespaceUri));
     }
 
     public void parseConstructorArgElements(Element ele, BeanDefinition bd) {

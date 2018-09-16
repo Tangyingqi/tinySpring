@@ -7,7 +7,9 @@ import org.junit.Test;
 import org.tinyspring.aop.aspectj.AspectJAfterReturningAdvice;
 import org.tinyspring.aop.aspectj.AspectJAfterThrowingAdvice;
 import org.tinyspring.aop.aspectj.AspectJBeforeAdvice;
+import org.tinyspring.aop.config.AspectInstanceFactory;
 import org.tinyspring.aop.framework.ReflectiveMethodInvocation;
+import org.tinyspring.beans.factory.BeanFactory;
 import org.tinyspring.service.v5.PetStoreService;
 import org.tinyspring.tx.TransactionManager;
 import org.tinyspring.util.MessageTracker;
@@ -20,34 +22,38 @@ import java.util.List;
  * @author tangyingqi
  * @date 2018/8/6
  */
-public class ReflectiveMethodInvocationTest {
+public class ReflectiveMethodInvocationTest extends AbstractTest{
 
     private AspectJBeforeAdvice beforeAdvice = null;
     private AspectJAfterReturningAdvice afterAdvice = null;
     private AspectJAfterThrowingAdvice afterThrowingAdvice = null;
     private PetStoreService petStoreService = null;
-    private TransactionManager tx;
+
+    private BeanFactory beanFactory;
+    private AspectInstanceFactory aspectInstanceFactory;
 
     @Before
     public void setUp() throws NoSuchMethodException {
 
         petStoreService = new PetStoreService();
-        tx = new TransactionManager();
+        beanFactory = this.getBeanFactory("petstore-v5.xml");
+        aspectInstanceFactory = this.getAspectInstanceFactory("tx");
+        aspectInstanceFactory.setBeanFactory(beanFactory);
 
         MessageTracker.cleanMsg();
         beforeAdvice = new AspectJBeforeAdvice(
                 TransactionManager.class.getMethod("start"),
                 null,
-                tx);
+                aspectInstanceFactory);
 
         afterAdvice = new AspectJAfterReturningAdvice(
                 TransactionManager.class.getMethod("commit"),
                 null,
-                tx);
+                aspectInstanceFactory);
         afterThrowingAdvice = new AspectJAfterThrowingAdvice(
                 TransactionManager.class.getMethod("rollback"),
                 null,
-                tx
+                aspectInstanceFactory
         );
     }
 

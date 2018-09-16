@@ -18,6 +18,7 @@ public class GenericBeanDefinition implements BeanDefinition {
     private boolean prototype = false;
     private String scope = SCOPE_DEFAULT;
     private Class<?> beanClass;
+    private boolean isSynthetic;
 
     List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
     private ConstructorArgument constructorArgument = new ConstructorArgument();
@@ -25,6 +26,10 @@ public class GenericBeanDefinition implements BeanDefinition {
     public GenericBeanDefinition(String id, String beanClassName) {
         this.id = id;
         this.beanClassName = beanClassName;
+    }
+    public GenericBeanDefinition(Class<?> clz) {
+        this.beanClass = clz;
+        this.beanClassName = clz.getName();
     }
 
     public GenericBeanDefinition(){
@@ -93,6 +98,19 @@ public class GenericBeanDefinition implements BeanDefinition {
                     "Bean class name [" + this.getBeanClassName() + "] has not been resolved into an actual Class");
         }
         return beanClass;
+    }
+
+    @Override
+    public boolean isSynthetic() {
+        return isSynthetic;
+    }
+
+    public void setSynthetic(boolean synthetic) {
+        isSynthetic = synthetic;
+    }
+
+    public void setBeanClass(Class<?> beanClass) {
+        this.beanClass = beanClass;
     }
 
     @Override

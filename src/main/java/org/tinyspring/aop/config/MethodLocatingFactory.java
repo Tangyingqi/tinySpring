@@ -2,6 +2,8 @@ package org.tinyspring.aop.config;
 
 import org.tinyspring.beans.BeanUtils;
 import org.tinyspring.beans.factory.BeanFactory;
+import org.tinyspring.beans.factory.BeanFactoryAware;
+import org.tinyspring.beans.factory.FactoryBean;
 import org.tinyspring.utils.StringUtils;
 
 import java.lang.reflect.Method;
@@ -10,7 +12,7 @@ import java.lang.reflect.Method;
  * @author tangyingqi
  * @date 2018/7/31
  */
-public class MethodLocatingFactory {
+public class MethodLocatingFactory implements FactoryBean<Method>,BeanFactoryAware {
 
     private String targetBeanName;
 
@@ -26,6 +28,7 @@ public class MethodLocatingFactory {
         this.methodName = methodName;
     }
 
+    @Override
     public void setBeanFactory(BeanFactory beanFactory){
 
         if (!StringUtils.hasText(targetBeanName)){
@@ -49,7 +52,13 @@ public class MethodLocatingFactory {
     }
 
 
+    @Override
     public Method getObject(){
         return this.method;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return Method.class;
     }
 }
