@@ -6,6 +6,7 @@ import org.tinyspring.aop.Pointcut;
 import org.tinyspring.aop.framework.AopConfigSupport;
 import org.tinyspring.aop.framework.AopProxyFactory;
 import org.tinyspring.aop.framework.CglibProxyFactory;
+import org.tinyspring.aop.framework.JdkAopProxyFactory;
 import org.tinyspring.beans.factory.config.BeanPostProcessor;
 import org.tinyspring.beans.factory.config.ConfigurableBeanFactory;
 import org.tinyspring.utils.ClassUtils;
@@ -63,6 +64,8 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 
         if (config.getProxiedInterfaces().length == 0){
             proxyFactory = new CglibProxyFactory(config);
+        }else{
+            proxyFactory = new JdkAopProxyFactory(config);
         }
 
         return proxyFactory.getProxy();
