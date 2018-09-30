@@ -33,6 +33,8 @@ public class CGLibAopProxyTest extends AbstractTest {
     @Before
     public void setUp() throws NoSuchMethodException {
 
+        MessageTracker.cleanMsg();
+
         String expression = "execution(* org.tinyspring.service.v5.*.placeOrder(..))";
         pc = new AspectJExpressionPointcut();
         pc.setExpression(expression);

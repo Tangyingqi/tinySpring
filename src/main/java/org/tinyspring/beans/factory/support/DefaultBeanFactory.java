@@ -1,6 +1,8 @@
 package org.tinyspring.beans.factory.support;
 
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.tinyspring.beans.BeanDefinition;
 import org.tinyspring.beans.PropertyValue;
 import org.tinyspring.beans.SimpleTypeConverter;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by tangyingqi on 2018/6/26.
@@ -33,6 +36,8 @@ public class DefaultBeanFactory extends AbstractBeanFactory
     private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
 
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+
+    private static final Log logger = LogFactory.getLog(DefaultBeanFactory.class);
 
 
     @Override
@@ -59,7 +64,15 @@ public class DefaultBeanFactory extends AbstractBeanFactory
     private List<String> getBeanIDsByType(Class<?> type){
         List<String> result = new ArrayList<>();
         for (String beanName : this.beanDefinitionMap.keySet()){
-            if (type.isAssignableFrom(this.getType(beanName))){
+            Class<?> beanClass = null;
+            try {
+                beanClass = this.getType(beanName);
+            }catch (Exception e){
+                logger.warn("can't load class for bean:"+beanName+",skip it.");
+                continue;
+            }
+
+            if (beanClass != null && type.isAssignableFrom(beanClass)){
                 result.add(beanName);
             }
         }
